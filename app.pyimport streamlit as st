@@ -1,0 +1,22 @@
+from models import SessionLocal, ICD10Code
+
+st.title("ICD‑10 Code Search")
+
+query = st.text_input("Search ICD‑10 codes or descriptions")
+
+session = SessionLocal()
+
+if query:
+    results = session.query(ICD10Code).filter(
+        ICD10Code.long_description.ilike(f"%{query}%")
+        | ICD10Code.short_description.ilike(f"%{query}%")
+        | ICD10Code.code.ilike(f"%{query}%")
+    ).all()
+
+    st.write(f"Found {len(results)} results")
+
+    for r in results[:50]:
+        st.subheader(f"{r.code} — {r.short_description}")
+        st.write(r.long_description)
+        st.write("---")
+
